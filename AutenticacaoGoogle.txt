@@ -1,0 +1,31 @@
+
+- Criar conta de desenvolvedor
+
+https://developers.google.com/
+
+(Se usuário atual não é, ele dá a opção)
+
+https://console.cloud.google.com/apis/dashboard
+
+(Criar um projeto, caso não o tenha)
+
+- Clicar em Criar Credenciais / ID do Cliente OAuth
+
+- Configurar tela de consentimento  (incluir usuários de teste)
+
+- Adicionar URL autorizada para redirecionar (sua URL+a pagina do google)
+
+https://localhost:44350/signin-google
+
+- Pegar ID do Cliente / Chave Secreta
+
+ID: 
+
+Chave: 
+
+- Acessar o arquivo: Startup.Auth
+
+- Fornecer chaves para autenticação do Google
+
+- Logar e testar autenticação
+
