@@ -1,0 +1,286 @@
+
+-- default
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Estilos.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <header>
+            <h1>Exemplo Web Page</h1>
+            <h2>Tecnologias Web - Html, Javascript, Css, Razor e Web Pages</h2>
+
+        </header>
+
+        <section>
+            <p>
+                No desenvolvimento Web, diversas tecnologias são utilizadas.
+                Algumas são executadas do lado do Servidor(Server) e outras
+                são executadas do lado do Cliente(Client).
+            </p>
+
+            <dl>
+                <dt>
+                    <a href="javascript:exibirEsconderElemento('ddClient')">
+                        Tecnologias: Client
+                    </a>
+                </dt>
+                <dd id="ddClient" style="display:none">
+                    <ul>
+                        <li>Html</li>
+                        <li>Css</li>
+                        <li>Javascript</li>
+                    </ul>
+                </dd>
+
+                <dt>
+                    <a href="javascript:exibirEsconderElemento('ddServer')">
+                        Tecnologias: Server
+                    </a>
+                </dt>
+                <dd id="ddServer" style="display:none">
+                    <ul>
+                        <li>C#</li>
+                        <li>ASP.NET</li>
+                        <li>Web Pages</li>
+                        <li>MVC</li>
+                        <li>Razor</li>
+                    </ul>
+                </dd>
+
+            </dl>
+
+            <p>
+                <a href="ComentarioForm.cshtml">Deixe seu comentário</a>
+            </p>
+
+        </section>
+
+        <footer>
+            <hr />
+            <p>
+                Desenvolvido para o curso de ASP.NET
+                &copy; @DateTime.Now.Year - Impacta Tecnologia
+            </p>
+        </footer>
+
+    </div>
+    <script>
+        function exibirEsconderElemento(elementoId) {
+            var elemento = document.getElementById(elementoId);
+            if (elemento.style.display == "none") {
+                elemento.style.display = "block";
+            }
+            else {
+                elemento.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+-- comentario form
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Estilos.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <header>
+            <h1>Exemplo Web Page</h1>
+            <h2>Html, Javascript, Css, Razor e Web Pages</h2>
+            <a href="~/Default.cshtml">Voltar</a>
+        </header>
+        <section>
+
+            <p>Deixe seu comentário:    </p>
+
+            <form action="~/ComentarioProcessar.cshtml" method="post">
+
+                <div class="form-grupo">
+                    <label for="nome">Nome:</label>
+                    <input type="text" name="nome" id="nome" />
+                </div>
+
+                <div class="form-grupo">
+                    <label for="comentario">Comentário</label>
+                    <textarea id="comentario" name="comentario">
+                    </textarea>
+                </div>
+
+                <div class="form-botoes">
+                    <input type="submit" value="Enviar" />
+                </div>
+            </form>
+
+
+        </section>
+
+
+    </div>
+</body>
+</html>
+
+
+-- webapp
+
+using System;
+using System.IO;
+using System.Text;
+using System.Web;
+
+namespace Lab02.App
+{
+    public static class WebApp
+    {
+        private static string comentarioArquivo
+        {
+            get
+            {
+                return HttpContext.Current.Server.MapPath("~/comentarios.txt");
+            }
+        }
+
+        public static void ComentarioIncluir(
+            string nome, string comentario)
+        {
+            using (var writer =
+              new StreamWriter(comentarioArquivo, true, Encoding.UTF8))
+            {
+                writer.WriteLine(
+                    $"{DateTime.Now:dd/MM/yyyy} - {DateTime.Now:HH:mm:ss}");
+
+                writer.WriteLine($"{nome}: {comentario}\r\n");
+            }
+
+        }
+
+        public static string ComentariosObter()
+        {
+            string texto = string.Empty;
+
+            if (!File.Exists(comentarioArquivo))
+            {
+                return texto;
+            }
+
+            using (var reader = new StreamReader(comentarioArquivo))
+            {
+                texto = reader.ReadToEnd();
+            }
+
+            return texto;
+        }
+    }
+}
+
+-- comentário lista
+
+@{
+    Layout = null;
+}
+@using Lab02.App
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Estilos.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <header>
+            <h1>Exemplo Web Page</h1>
+            <h2>Html, Javascript, Css, Razor e Web Pages</h2>
+            <a href="~/Default.cshtml">Voltar</a>
+        </header>
+
+        <section>
+            <p>Comentários:</p>
+            <pre>
+                    @WebApp.ComentariosObter()
+                </pre>
+        </section>
+    </div>
+</body>
+</html>
+
+
+-- Comentário processar
+
+@{
+    Layout = null;
+}
+@using Lab02.App;
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Estilos.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <header>
+            <h1>Exemplo Web Page</h1>
+            <h2>Html, Javascript, Css, Razor e Web Pages</h2>
+            <a href="~/Default.cshtml">Voltar</a>
+        </header>
+
+        <section>
+            @if (!IsPost)
+            {
+                Response.Redirect("~/comentarioForm.cshtml");
+            }
+            else
+            {
+
+                string nome = Request.Form["nome"];
+                string comentario = Request.Form["comentario"];
+
+                if (string.IsNullOrWhiteSpace(nome) ||
+                    string.IsNullOrWhiteSpace(comentario))
+                {
+                    Response.Redirect("~/comentarioForm.cshtml");
+                }
+                else
+                {
+                    WebApp.ComentarioIncluir(nome, comentario);
+                }
+            }
+
+            <p>Obrigado por seu comentário</p>
+
+            <p>
+                <a href="~/Default.cshtml">Voltar</a>
+                <a href="~/ComentarioLista.cshtml">Exibir Comentários</a>
+            </p>
+
+        </section>
+
+    </div>
+</body>
+</html>
