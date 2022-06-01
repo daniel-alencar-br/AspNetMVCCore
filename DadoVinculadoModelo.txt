@@ -1,0 +1,51 @@
+
+-- Novo Model:
+
+ public class Lanches
+    {
+        public string NomeLanche { get; set; }
+    }
+
+----------------------------
+
+-- vinculo no aluno:
+
+public List<Lanches> Lista { get; set; }
+
+----------------------------
+
+-- Preenchimento no Controller:
+
+ 	    Alunos NovoAluno = new Alunos();
+
+            List<Lanches> Cardapio = new List<Lanches>();
+            Cardapio.Add(new Lanches { NomeLanche = "Pastel" });
+            Cardapio.Add(new Lanches { NomeLanche = "Pizza" });
+            Cardapio.Add(new Lanches { NomeLanche = "Suco" });
+            Cardapio.Add(new Lanches { NomeLanche = "Bolacha" });
+
+            NovoAluno.Lista = Cardapio;
+
+            return View("VerAluno", NovoAluno);
+
+----------------------------
+
+-- Preenchimento da View
+
+ <select id="Lista">
+
+       @{
+
+           foreach (Cap03N3.Models.Lanches Item in Model.Lista)
+           {
+                <option>@Item.NomeLanche</option>
+           }
+                 
+
+        }
+
+   </select>
+
+----------------------------
+
+
